@@ -12,7 +12,8 @@
     "outDir": "./dist",
 
     // Environment Settings
-    "module": "es6",
+    "module": "nodenext",
+    "moduleResolution": "NodeNext",
     "target": "esnext",
     "types": [],
     // For nodejs:
