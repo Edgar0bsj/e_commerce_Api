@@ -1,6 +1,6 @@
 import express from "express";
-import type {Application} from "express";
-import type { routesType } from "../routes/user_route.js";
+import type { Application } from "express";
+import type { routesType } from "../routes/user.route.js";
 
 
 
@@ -9,8 +9,8 @@ export class Server {
     private app:Application;
     private routes:routesType;
 
-    constructor(expres:Function, routes:routesType){
-        this.app = expres();
+    constructor(expressFn:typeof express, routes:routesType){
+        this.app = expressFn();
         this.routes = routes
 
 

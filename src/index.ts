@@ -1,8 +1,8 @@
 import express, { Router } from "express";
-import { routes } from "./routes/user_route.js";
+import { Routes } from "./routes/user.route.js";
 import { Server } from "./server/Server.js";
 
-const router = new routes(Router);
+const router = new Routes(Router);
 const serve = new Server(express, router);
 
 
