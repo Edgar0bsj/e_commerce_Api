@@ -75,5 +75,5 @@ export class routes {
 
 } 
 
-
+export type routesType = routes;
 

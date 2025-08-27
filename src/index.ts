@@ -1,14 +1,11 @@
 import express, { Router } from "express";
 import { routes } from "./routes/user_route.js";
+import { Server } from "./server/Server.js";
 
-const rota = new routes(Router);
-
-const app = express();
-app.use(express.json());
+const router = new routes(Router);
+const serve = new Server(express, router);
 
 
-app.use('/', rota.init());
 
-app.listen(3006, function(){
-    console.log("servidor rodando na porta 3006")
-})
+serve.init();
+
