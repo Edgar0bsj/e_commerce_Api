@@ -1,33 +1,41 @@
 import type { Request, Response } from "express";
+import db from "../database/connection.js";
+
 
 type user = {
     id: number;
     name: string;
     ager: number
 }
-let id:number = 0;
 const users:user[] = [];
 
-export class UserController {
 
-    static get(req:Request, res:Response){
+export default class UserController {
+
+    // GET ALL -> lendo todos os dados
+    static async getAll(req:Request, res:Response){
+        const data = await db.collection("user").get(); // <-----
+        const users = data.docs.map(el => {
+            return {
+                id: el.id,
+                ...el.data()
+            }
+        })
+
         res.send(users)
     }
 
-    static getAll(req:Request, res:Response) {
+    static get(req:Request, res:Response) {
         let userId = Number(req.params.id);
         let user = users.find(el => el.id === userId)
         res.send(user)
     }
 
+    // ADD -> adicionando dados no fireBase
     static submit(req:Request, res:Response) {
-        let _user:user = {
-            id: ++id,
-            name: req.body.name,
-            ager: req.body.ager,
-        }
+        const body = req.body;
+        db.collection("user").add(body); // <------
 
-        users.push(_user);
         res.send("dados capturados com sucesso!")
     }
 

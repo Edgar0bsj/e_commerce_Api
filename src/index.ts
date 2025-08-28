@@ -1,11 +1,17 @@
-import express, { Router } from "express";
-import { Routes } from "./routes/user.route.js";
-import { Server } from "./server/Server.js";
+import express from "express";
+import {server} from "./server/server.js";
+// import { initializeApp } from 'firebase-admin/app';
+import userRouter  from "./routes/user.route.js";
 
-const router = new Routes(Router);
-const serve = new Server(express, router);
+const port = 3006;
+// initializeApp();
+
+const app = express();
+
+app.use(express.json());
+app.use("/user", userRouter )
+
+server(app,port);
 
 
-
-serve.init();
-
+export type expressType = typeof app
