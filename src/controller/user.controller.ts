@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import db from "../database/connection.js";
 
 
@@ -13,16 +13,22 @@ const users:user[] = [];
 export default class UserController {
 
     // GET ALL -> lendo todos os dados
-    static async getAll(req:Request, res:Response){
-        const data = await db.collection("user").get(); // <-----
-        const users = data.docs.map(el => {
-            return {
-                id: el.id,
-                ...el.data()
-            }
-        })
+    static async getAll(req:Request, res:Response, next:NextFunction){
+        try {
+            const data = await db.collection("user").get(); // <-----
+            const users = data.docs.map(el => {
+                return {
+                    id: el.id,
+                    ...el.data()
+                }
+            })
+    
+            res.status(200).send(users)
+            
+        } catch (error) {
+            next(error);
+        }
 
-        res.send(users)
     }
 
     // GET BY ID -> buscar por id
