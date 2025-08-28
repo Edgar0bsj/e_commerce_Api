@@ -25,10 +25,16 @@ export default class UserController {
         res.send(users)
     }
 
-    static get(req:Request, res:Response) {
-        let userId = Number(req.params.id);
-        let user = users.find(el => el.id === userId)
-        res.send(user)
+    // GET BY ID -> buscar por id
+    static async getById(req:Request, res:Response) {
+        let userId = String(req.params.id);
+
+        const doc = await db.collection("user").doc(userId).get();
+        let dataUser = {
+            id: doc.id,
+            ...doc.data()
+        }
+        res.send(dataUser)
     }
 
     // ADD -> adicionando dados no fireBase
@@ -36,28 +42,31 @@ export default class UserController {
         const body = req.body;
         db.collection("user").add(body); // <------
 
-        res.send("dados capturados com sucesso!")
+        res.status(201).send("dados capturados com sucesso!");
     }
 
+    // EDIT -> editando dados via put
     static edit(req: Request, res:Response) {
-        let id = Number(req.params.id);
-        let clientUser = req.body;
+        let id = String(req.params.id);
+        let clientUser:user = req.body;
 
-        users.forEach(el => {
-            if (el.id === id) {
-                el.name = clientUser.name;
-                el.ager = clientUser.ager;
-            }
-        })
+        let editUser:Partial<user> = {
+            name : clientUser.name,
+            ager : clientUser.ager
+        }
+
+        db.collection("user").doc(id).set(editUser);
+
         res.send("item alterado com sucesso!");
     }
 
-    static delete(req:Request, res:Response){
-        let id = Number(req.params.id);
-        let userIndex = users.findIndex(el=>el.id === id);
-        users.splice(userIndex, 1);
+    // DELETE -> deletando no firestore
+    static async delete(req:Request, res:Response){
+        let id = String(req.params.id);
+        
+        await db.collection("user").doc(id).delete();
 
-        res.send("Usuario deletado com sucesso!")
+        res.status(204).end();
     }
 
 
