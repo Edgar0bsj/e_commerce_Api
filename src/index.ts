@@ -1,25 +1,15 @@
 import express from "express";
-import {server} from "./server/server.js";
-import userRouter  from "./routes/user.route.js";
-import type {NextFunction, Request, Response} from "express";
-
-const port = 3006;
-
+import { server } from "./server/server.js";
+import { erroMiddleware } from "./middleware/erro.middleware.js";
+import { direction } from "./routes/index.route.js";
+import { errors } from "celebrate";
 
 const app = express();
 
-app.use(express.json());
-app.use("/user", userRouter )
+direction(app);
+app.use(errors());
+erroMiddleware(app);
 
-app.use((err:unknown, req:Request, res:Response, next:NextFunction)=>{
-    const message = err instanceof Error ? err.message : "Erro desconhecido";
-    res.status(500).send({
-        message: "Erro interno do servidor!",
-        error: message
-    });
-})
+server(app);
 
-
-server(app,port);
-
-export type expressType = typeof app
+export type expressType = typeof app;
