@@ -1,17 +1,6 @@
-import db from "../database/connection.js";
 import userRepository from "../repository/user.repository.js";
-/**
- *=================== ///// ===================
- *
- * Type > User
- *
- *=============================================
- */
-type User = {
-  id: any;
-  name: string;
-  age: number;
-};
+import type { User } from "../repository/user.repository.js";
+
 /**
  *=================== ///// ===================
  *
@@ -23,7 +12,7 @@ type UserServer = {
   getAll: () => Promise<User[]>;
   getById: (id: string) => Promise<User>;
   submit: (body: any) => void;
-  edit: (id: string, body: any) => void;
+  edit: (body: User) => void;
   delete: (id: string) => Promise<void>;
 };
 /**
@@ -43,7 +32,7 @@ const userService = (): UserServer => {
      *=============================================
      */
     getAll: async (): Promise<User[]> => {
-      return userRepository.getAll();
+      return await userRepository.getAll();
     },
     /**
      *=================== ///// ===================
@@ -53,14 +42,7 @@ const userService = (): UserServer => {
      *=============================================
      */
     getById: async (id: string): Promise<User> => {
-      const doc = await db.collection("user").doc(id).get();
-
-      let user = {
-        id: doc.id,
-        ...doc.data(),
-      } as User;
-
-      return user;
+      return await userRepository.getOne(id);
     },
     /**
      *=================== ///// ===================
@@ -69,8 +51,8 @@ const userService = (): UserServer => {
      * @returns -> Promise<void>
      *=============================================
      */
-    submit: async (body: any): Promise<void> => {
-      await db.collection("user").add(body);
+    submit: async (body: Partial<User>): Promise<void> => {
+      return await userRepository.create(body);
     },
     /**
      *=================== ///// ===================
@@ -79,13 +61,8 @@ const userService = (): UserServer => {
      * @returns -> Promise<void>
      *=============================================
      */
-    edit: async (id: string, body: any): Promise<void> => {
-      let user: Partial<User> = {
-        name: body.name,
-        age: body.age,
-      };
-
-      await db.collection("user").doc(id).set(user);
+    edit: async (body: User): Promise<void> => {
+      return userRepository.edit(body);
     },
     /**
      *=================== ///// ===================
@@ -95,7 +72,7 @@ const userService = (): UserServer => {
      *=============================================
      */
     delete: async (id: string): Promise<void> => {
-      await db.collection("user").doc(id).delete();
+      userRepository.removi(id);
     },
   };
 };

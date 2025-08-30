@@ -1,6 +1,17 @@
 import { getFirestore } from "firebase-admin/firestore";
 import { initializeApp } from "firebase-admin/app";
 
+/**=============== Type User ===================
+ *
+ *@type User
+ *
+ * =================== ///// ===================
+ */
+export type User = {
+  id: string;
+  name: string;
+  age: number;
+};
 /**=============== Interface ===================
  *
  *@interface iUserRepository
@@ -8,10 +19,10 @@ import { initializeApp } from "firebase-admin/app";
  * =================== ///// ===================
  */
 interface iUserRepository {
-  getAll(): Promise<any>;
-  getOne(id: string): Promise<any>;
-  create(user: { id: string; name: string; age: number }): Promise<void>;
-  edit(user: { id: string; name: string; age: number }): Promise<void>;
+  getAll(): Promise<User[]>;
+  getOne(id: string): Promise<User>;
+  create(user: Partial<User>): Promise<void>;
+  edit(user: User): Promise<void>;
   removi(id: string): Promise<void>;
 }
 
@@ -25,15 +36,14 @@ interface iUserRepository {
 class UserRepository implements iUserRepository {
   /**============ Attributes =====================
    *
-   * @description - Composition of {initializeApp , initializeApp}
+   * @description - Composition of {getFirestore}
    *
    * =================== ///// ===================
    */
-  private firebaseInit: ReturnType<typeof initializeApp>;
   private db: ReturnType<typeof getFirestore>;
 
   constructor() {
-    this.firebaseInit = initializeApp();
+    initializeApp();
     this.db = getFirestore();
   }
   /**================= Methods ===================
@@ -47,39 +57,46 @@ class UserRepository implements iUserRepository {
    * -> Get all users
    *
    */
-  async getAll(): Promise<any> {
+  async getAll(): Promise<User[]> {
     const data = await this.db.collection("user").get();
-    const user = await data.docs.map((el) => {
+    const _user: User[] = await data.docs.map((el) => {
       return {
         id: el.id,
         ...el.data(),
-      };
+      } as User;
     });
-    return user;
+    return _user;
   }
   /**
    *
    * -> Get One User of data base
    *
    */
-  async getOne(id: string): Promise<any> {
-    throw new Error("Method not implemented.");
+  async getOne(id: string): Promise<User> {
+    const data = await this.db.collection("user").doc(id).get();
+    const _user: User = {
+      id: data.id,
+      ...data.data(),
+    } as User;
+
+    return _user;
   }
   /**
    *
    * -> Create user
    *
    */
-  async create(user: { id: string; name: string; age: number }): Promise<void> {
-    throw new Error("Method not implemented.");
+  async create(user: Partial<User>): Promise<void> {
+    await this.db.collection("user").add(user);
   }
   /**
    *
-   * -> edit of user
+   * -> Edit of user
    *
    */
-  async edit(user: { id: string; name: string; age: number }): Promise<void> {
-    throw new Error("Method not implemented.");
+  async edit(user: User): Promise<void> {
+    const { id, ...restUser } = user;
+    await this.db.collection("user").doc(id).set(restUser);
   }
   /**
    *
@@ -87,7 +104,7 @@ class UserRepository implements iUserRepository {
    *
    */
   async removi(id: string): Promise<void> {
-    throw new Error("Method not implemented.");
+    await this.db.collection("user").doc(id).delete();
   }
 }
 

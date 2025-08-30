@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import userService from "../service/user.service.js";
+import type { User } from "../repository/user.repository.js";
 
 export default class UserController {
   /**
@@ -66,9 +67,14 @@ export default class UserController {
    */
   static edit(req: Request, res: Response, next: NextFunction) {
     try {
-      let userId = String(req.params.id);
-      let userBody: any = req.body;
-      userService().edit(userId, userBody);
+      const _id = req.params.id;
+      const _body: Partial<User> = req.body;
+      const userBody: User = {
+        id: _id,
+        name: _body.name,
+        age: _body.age,
+      } as User;
+      userService().edit(userBody);
 
       res.send("O Usuario alterado com sucesso!");
     } catch (error) {
