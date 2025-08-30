@@ -1,4 +1,5 @@
 import db from "../database/connection.js";
+import userRepository from "../repository/user.repository.js";
 /**
  *=================== ///// ===================
  *
@@ -42,16 +43,7 @@ const userService = (): UserServer => {
      *=============================================
      */
     getAll: async (): Promise<User[]> => {
-      const data = await db.collection("user").get();
-
-      const users: User[] = data.docs.map((el) => {
-        return {
-          id: el.id,
-          ...el.data(),
-        } as User;
-      });
-
-      return users;
+      return userRepository.getAll();
     },
     /**
      *=================== ///// ===================

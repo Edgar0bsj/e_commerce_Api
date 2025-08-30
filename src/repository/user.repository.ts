@@ -10,12 +10,12 @@ import { initializeApp } from "firebase-admin/app";
 interface iUserRepository {
   getAll(): Promise<any>;
   getOne(id: string): Promise<any>;
-  create(user: { id: string; name: string; age: number }): Promise<any>;
-  edit(user: { id: string; name: string; age: number }): Promise<any>;
-  removi(id: string): Promise<any>;
+  create(user: { id: string; name: string; age: number }): Promise<void>;
+  edit(user: { id: string; name: string; age: number }): Promise<void>;
+  removi(id: string): Promise<void>;
 }
 
-/**============ class UserRepository ===========
+/**============ Class UserRepository ===========
  *
  * @description - Class core of repository
  *
@@ -23,6 +23,12 @@ interface iUserRepository {
  */
 
 class UserRepository implements iUserRepository {
+  /**============ Attributes =====================
+   *
+   * @description - Composition of {initializeApp , initializeApp}
+   *
+   * =================== ///// ===================
+   */
   private firebaseInit: ReturnType<typeof initializeApp>;
   private db: ReturnType<typeof getFirestore>;
 
@@ -30,20 +36,57 @@ class UserRepository implements iUserRepository {
     this.firebaseInit = initializeApp();
     this.db = getFirestore();
   }
-
+  /**================= Methods ===================
+   *
+   * @description - Class core of repository
+   *
+   * =================== ///// ===================
+   */
+  /**
+   *
+   * -> Get all users
+   *
+   */
   async getAll(): Promise<any> {
-    throw new Error("Method not implemented.");
+    const data = await this.db.collection("user").get();
+    const user = await data.docs.map((el) => {
+      return {
+        id: el.id,
+        ...el.data(),
+      };
+    });
+    return user;
   }
+  /**
+   *
+   * -> Get One User of data base
+   *
+   */
   async getOne(id: string): Promise<any> {
     throw new Error("Method not implemented.");
   }
-  async create(user: { id: string; name: string; age: number }): Promise<any> {
+  /**
+   *
+   * -> Create user
+   *
+   */
+  async create(user: { id: string; name: string; age: number }): Promise<void> {
     throw new Error("Method not implemented.");
   }
-  async edit(user: { id: string; name: string; age: number }): Promise<any> {
+  /**
+   *
+   * -> edit of user
+   *
+   */
+  async edit(user: { id: string; name: string; age: number }): Promise<void> {
     throw new Error("Method not implemented.");
   }
-  async removi(id: string): Promise<any> {
+  /**
+   *
+   * -> removi user of data base
+   *
+   */
+  async removi(id: string): Promise<void> {
     throw new Error("Method not implemented.");
   }
 }
